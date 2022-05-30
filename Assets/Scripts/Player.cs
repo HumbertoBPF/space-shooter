@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 5.0f;
+    private float _speedBoostMultiplier = 2.0f;
     // PreFabs
     [SerializeField]
     private GameObject _laserPrefab;
@@ -25,6 +26,8 @@ public class Player : MonoBehaviour
     // Power-ups
     [SerializeField]
     private bool _isTripleShotActive = false;
+    [SerializeField]
+    private bool _isShieldEnabled = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -91,6 +94,7 @@ public class Player : MonoBehaviour
     {
         _canFire = Time.time + _fireRate;
         // Debug.Log("Space key logged");
+        Debug.Log("Is triple shot active = "+_isTripleShotActive);
         if (_isTripleShotActive)
         {
             Instantiate(_tripleLaserPrefab, transform.position, Quaternion.identity);
@@ -114,12 +118,20 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        _lives--;
-
-        if (_lives <= 0)
+        if (_isShieldEnabled)
         {
-            Destroy(this.gameObject);
-            _spawnManager.OnPlayerDeath();
+            transform.GetChild(0).gameObject.SetActive(false);
+            _isShieldEnabled = false;
+        }
+        else
+        {
+            _lives--;
+
+            if (_lives <= 0)
+            {
+                Destroy(this.gameObject);
+                _spawnManager.OnPlayerDeath();
+            }
         }
     }
 
@@ -133,6 +145,32 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5);
         _isTripleShotActive = false;
+    }
+
+    public void SpeedBoostActive()
+    {
+        _speed *= _speedBoostMultiplier;
+        StartCoroutine(SpeedPowerDownRoutine());
+    }
+
+    IEnumerator SpeedPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5);
+        _speed /= _speedBoostMultiplier;
+    }
+
+    public void ShieldActive()
+    {
+        _isShieldEnabled = true;
+        transform.GetChild(0).gameObject.SetActive(true);
+        StartCoroutine(ShieldPowerDownRoutine());
+    }
+
+    IEnumerator ShieldPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5);
+        transform.GetChild(0).gameObject.SetActive(false);
+        _isShieldEnabled = false;
     }
 
 }

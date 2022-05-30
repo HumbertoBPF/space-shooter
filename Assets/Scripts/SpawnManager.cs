@@ -9,7 +9,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyContainer;
     [SerializeField]
-    private GameObject _powerup;
+    private GameObject[] powerups;
     private bool _isPlayerAlive = true;
     // Start is called before the first frame update
     void Start()
@@ -53,7 +53,9 @@ public class SpawnManager : MonoBehaviour
             int waitingTime = Random.Range(3, 8);
             Debug.Log("Waiting time = "+waitingTime);
             yield return new WaitForSeconds(waitingTime);
-            Instantiate(_powerup, new Vector3(randomX, ymax, 0), Quaternion.identity);
+
+            int randomIndex = Random.Range(0, powerups.Length);
+            Instantiate(powerups[randomIndex], new Vector3(randomX, ymax, 0), Quaternion.identity);
         }
     }
 
