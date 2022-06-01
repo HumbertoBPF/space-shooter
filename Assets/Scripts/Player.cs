@@ -28,16 +28,25 @@ public class Player : MonoBehaviour
     private bool _isTripleShotActive = false;
     [SerializeField]
     private bool _isShieldEnabled = false;
+    [SerializeField]
+    private int _score = 0;
+    private UIManager _uiManager;
     // Start is called before the first frame update
     void Start()
     {
         //take the current position = new position(0,0,0)
         transform.position = new Vector3(0, 0, 0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if (_spawnManager == null)
         {
             Debug.Log("SpawnManager is NULL");
+        }
+
+        if (_uiManager == null)
+        {
+            Debug.Log("UIManager is NULL");
         }
     }
 
@@ -126,11 +135,13 @@ public class Player : MonoBehaviour
         else
         {
             _lives--;
+            _uiManager.UpdateLives(_lives);
 
             if (_lives <= 0)
             {
-                Destroy(this.gameObject);
                 _spawnManager.OnPlayerDeath();
+                _uiManager.ShowGameOverText();
+                Destroy(this.gameObject);
             }
         }
     }
@@ -171,6 +182,12 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(5);
         transform.GetChild(0).gameObject.SetActive(false);
         _isShieldEnabled = false;
+    }
+
+    public void IncrementScore(int increment)
+    {
+        _score += increment;
+        _uiManager.UpdateScore(_score);
     }
 
 }
