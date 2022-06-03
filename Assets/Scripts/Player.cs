@@ -31,6 +31,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _score = 0;
     private UIManager _uiManager;
+    [SerializeField]
+    private GameObject _shieldVisualizer;
+    [SerializeField]
+    private GameObject _leftEngine, _rightEngine;
     // Start is called before the first frame update
     void Start()
     {
@@ -129,13 +133,23 @@ public class Player : MonoBehaviour
     {
         if (_isShieldEnabled)
         {
-            transform.GetChild(0).gameObject.SetActive(false);
+            _shieldVisualizer.SetActive(false);
             _isShieldEnabled = false;
         }
         else
         {
             _lives--;
             _uiManager.UpdateLives(_lives);
+
+            if (_lives == 2)
+            {
+                _rightEngine.SetActive(true);
+            }
+
+            if (_lives == 1)
+            {
+                _leftEngine.SetActive(true);
+            }
 
             if (_lives <= 0)
             {
